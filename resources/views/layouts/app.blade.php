@@ -49,6 +49,7 @@
     <footer>
         <div class="footer-section">
             <div class="footer-item">
+              
             <h2>PakarTani</h2>
             <p><a href="home.html"> Home </a></p>
             <p><a href="about.html"> About Us </a></p>

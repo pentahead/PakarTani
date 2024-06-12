@@ -39,7 +39,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         return view('weather');
     })->name('weather');
 
-    Route::get('/weather', [WeatherController::class, 'getWeather'])->name('weather.get');
+    Route::get('/weathercheck', [WeatherController::class, 'getWeather'])->name('weather.get');
 
 });
 

@@ -9,16 +9,25 @@ class WeatherController extends Controller
     public function getWeather(Request $request)
     {
         $location = $request->input('location');
+        if (empty($location)) {
+            return response()->json(['error' => 'Location parameter is required'], 400);
+        }
         
-        $apiKey = '33e8bdef63762ef264e7eaa7868bf175';
-        $url = "http://api.openweathermap.org/data/2.5/weather?q={$location}&units=metric&appid={$apiKey}";
+        $apiKey = '3ba66a0becc007620c72f67d2c5c8bc1'; // Ensure this matches your API key
+        $url = "https://api.openweathermap.org/data/2.5/weather?q=" . urlencode($location) . "&appid={$apiKey}&units=metric";
+        
+        try {
+            $response = Http::get($url);
 
-        $response = Http::get($url);
-
-        if ($response->successful()) {
-            return response()->json($response->json());
-        } else {
-            return response()->json(['error' => 'Could not fetch weather data'], 500);
+            if ($response->successful()) {
+                return response()->json($response->json());
+            } else {
+                $status = $response->status();
+                $error = $response->json()['message'] ?? 'Unknown error';
+                return response()->json(['error' => "Error ($status): $error"], $status);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while fetching weather data: ' . $e->getMessage()], 500);
         }
     }
 }
