@@ -49,23 +49,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h1 class="text-center" style="font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 30px">Login</h1>
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-                        
-                        <form id="login-form" method="POST" action="http://127.0.0.1:8000/login">
+                        <div id="error-messages" class="alert alert-danger" style="display: none;">
+                            <ul id="error-list"></ul>
+                        </div>
+                        <form id="login-form">
                             @csrf
                             <div class="form-group">
                                 <label for="username">Username:</label>
@@ -84,6 +71,33 @@
             </div>
         </div>
     </div>
-  
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#login-form').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                let username = $('#username').val();
+                let password = $('#password').val();
+
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/api/login',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username: username, password: password }),
+                    success: function(response) {
+                        localStorage.setItem('token', response.token);
+                        window.location.href = '/home'; // Redirect to the prices page
+                    },
+                    error: function(xhr) {
+                        let errorMessages = xhr.responseJSON.error || 'Login failed';
+                        $('#error-list').html(`<li>${errorMessages}</li>`);
+                        $('#error-messages').show();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

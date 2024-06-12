@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-
-
 @section('content')
 <div class="harga">
     <h1>Informasi Harga Pasar</h1>
@@ -15,12 +13,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        token = localStorage.getItem('token');
+        let token = localStorage.getItem('token');
 
         function fetchMarketPrices(token) {
             $.ajax({
-                url: '/api/marketprices',
-                type: 'get',
+                url: 'http://127.0.0.1:8000/api/marketprices',
+                type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token,
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
@@ -42,31 +40,16 @@
                         container.append(tableItem);
                     });
                 },
+                error: function(xhr) {
+                    // Handle errors
+                }
             });
         }
 
-        if (!token) {
-            $.ajax({
-                url: '/api/login',
-                type: 'POST',
-                data: {
-                    username: 'udin',  
-                    password: 'udin123' 
-                },
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                success: function(response) {
-                    localStorage.setItem('token', response.token);
-                    fetchMarketPrices(response.token);
-                },
-                error: function(error) {
-                    console.error('Login failed:', error);
-                    alert('Login failed. Please check your credentials and try again.');
-                }
-            });
-        } else {
+        if (token) {
             fetchMarketPrices(token);
+        } else {
+            window.location.href = '/login'; // Redirect to login if no token is found
         }
     });
 </script>

@@ -6,16 +6,18 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MarketPriceController;
 use App\Http\Controllers\InformasiTanamanController;
 
-Route::get('tanamans', [InformasiTanamanController::class, 'index']);
-Route::get('tanamans/{id}', [InformasiTanamanController::class, 'show']);
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::get('marketprices', [MarketPriceController::class, 'index']);
-Route::get('marketprices/{id}', [MarketPriceController::class, 'show']);
+
 
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
+    Route::get('marketprices', [MarketPriceController::class, 'index']);
+    Route::get('marketprices/{id}', [MarketPriceController::class, 'show']);
+    Route::get('tanamans', [InformasiTanamanController::class, 'index']);
+    Route::get('tanamans/{id}', [InformasiTanamanController::class, 'show']);
 });
 
 /*

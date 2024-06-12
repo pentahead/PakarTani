@@ -40,7 +40,7 @@
 </head>
 <body>
     <div class="container register-container">
-        <div class="login-logo">
+        <div class="register-logo">
             <img src="{{ asset('image/logo.png') }}" alt="Logo" width="100">
         </div>
         <div class="row justify-content-center">
@@ -48,24 +48,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h1 class="text-center" style="font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 30px">Register</h1>
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
-                        <form method="POST" action="{{ url('/register') }}">
-                            @csrf
+                        <div id="error-messages" class="alert alert-danger" style="display: none;">
+                            <ul id="error-list"></ul>
+                        </div>
+                        <form id="register-form">
                             <div class="form-group">
                                 <label for="username">Username:</label>
                                 <input type="text" id="username" name="username" class="form-control" required>
@@ -93,7 +79,39 @@
             </div>
         </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#register-form').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                let formData = {
+                    username: $('#username').val(),
+                    password: $('#password').val(),
+                    password_confirmation: $('#password_confirmation').val(),
+                    alamat: $('#alamat').val(),
+                    email: $('#email').val()
+                };
+
+                $.ajax({
+                    url: "http://127.0.0.1:8000/api/register",
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/login'; // Redirect to the login page
+                    },
+                    error: function(xhr) {
+                        let errorMessages = xhr.responseJSON.errors;
+                        $('#error-list').empty();
+                        $.each(errorMessages, function(key, value) {
+                            $('#error-list').append('<li>' + value[0] + '</li>');
+                        });
+                        $('#error-messages').show();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

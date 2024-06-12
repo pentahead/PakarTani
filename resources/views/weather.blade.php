@@ -28,6 +28,7 @@ style="background-image: url('{{ asset('image/elaine-casap-qgHGDbbSNm8-unsplash.
 <br>
 <br>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         fetchWeather('Jember');  
@@ -43,23 +44,28 @@ style="background-image: url('{{ asset('image/elaine-casap-qgHGDbbSNm8-unsplash.
     });
 
     function fetchWeather(location) {
-        fetch(`/weathercheck?location=${encodeURIComponent(location)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
+        const apiKey = '3ba66a0becc007620c72f67d2c5c8bc1';
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${apiKey}&units=metric`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data.cod !== 200) {
+                    alert(data.message);
                 } else {
-                    document.getElementById('weatherCard').style.display = 'block';
-                    document.getElementById('weatherIcon').src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
-                    document.getElementById('temperature').textContent = `${data.main.temp}°C`;
-                    document.getElementById('description').textContent = data.weather[0].description;
-                    document.getElementById('location').textContent = `${data.name}, ${data.sys.country}`;
+                    $('#weatherCard').show();
+                    $('#weatherIcon').attr('src', `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`);
+                    $('#temperature').text(`${data.main.temp}°C`);
+                    $('#description').text(data.weather[0].description);
+                    $('#location').text(`${data.name}, ${data.sys.country}`);
                 }
-            })
-            .catch(error => {
-                console.error('Error fetching weather data:', error);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching weather data:', errorThrown);
                 alert('Could not fetch weather data');
-            });
+            }
+        });
     }
 </script>
 @endsection
